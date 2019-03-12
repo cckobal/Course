@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+/*
 enum Emoji: String, CaseIterable {
     case smile = "😀"
     case cry = "😭"
@@ -17,12 +17,21 @@ enum Emoji: String, CaseIterable {
     case love = "😍"
     case cool = "😎"
     case botan = "🤓"
-
 }
-
+*/
 class ViewController: UIViewController {
     
-    private let countLabelText = "Счетчик нажатий:"
+    private let countLabelText = "Счет:"
+    
+    private let themes: [String: [String] ] = [
+        "winter": [ "⛄️", "❄️", "🌬", "💨", "🌨", "🌩"],
+        "halloween": [ "🌚", "🕷", "🧟‍♂️", "🧙‍♂️", "🧟‍♀️", "🧛‍♀️"],
+        "homeAnimals": ["😺", "🐹", "🐶", "🦉", "🐴", "🐌"],
+        "wildAnimals": ["🦊", "🐻", "🐼", "🦁", "🐯", "🐵"],
+        "kindaFlying": ["🐥", "🦆", "🦅", "🦉", "🦇", "🕊"],
+        "seaBoys": ["🦐", "🦀", "🐡", "🐠", "🦈", "🐬"],
+        //"halloween": [ Emoji.smile, Emoji.cry ]
+    ]
     
     private(set) var count = 0 {
         didSet {
@@ -36,10 +45,14 @@ class ViewController: UIViewController {
         return (self.cardButtons.count + 1) / 2
     }
     
+    @IBOutlet weak var newGameButton: UIButton!
     @IBOutlet private var cardButtons: [UIButton]!
     
-    private var emojiArray: [Emoji] = Emoji.allCases
-    private var emoji: [Int: Emoji] = [:]
+    //private lazy var emojiArray: [Emoji] = themes["winter"]!
+    private lazy var emojiArray: [String] = Array(themes.values).randomElement()!
+    private var emoji: [Int: String] = [:]
+    
+    //private lazy var test: [Emoji] = themes["winter"]!
     
     @IBOutlet private weak var countLabel: UILabel!
     
@@ -54,6 +67,13 @@ class ViewController: UIViewController {
         
     }
     
+    @IBAction func newGameButtonAction(_ sender: Any) {
+        self.emojiArray = Array(themes.values).randomElement()!
+        self.game = Concentration(numberOfPairsCard: self.numberOfPairsCard)
+        self.updateViewModel()
+    }
+    
+    
     private func updateViewModel() {
         for index in self.cardButtons.indices {
             let button = self.cardButtons[index]
@@ -67,6 +87,8 @@ class ViewController: UIViewController {
                 button.backgroundColor = card.isMatched ? #colorLiteral(red: 1, green: 0.6910475492, blue: 0, alpha: 0) : #colorLiteral(red: 1, green: 0.6910475492, blue: 0, alpha: 1)
             }
         }
+        
+        self.count = self.game.score
     }
     
     private func emoji(for card: Card) -> String {
@@ -74,7 +96,7 @@ class ViewController: UIViewController {
             self.emoji[card.identifier] = self.emojiArray.remove(at: self.emojiArray.count.arc4random)
         }
         
-        return self.emoji[card.identifier]?.rawValue ?? "?"
+        return self.emoji[card.identifier] ?? "?"
     }
     
 }

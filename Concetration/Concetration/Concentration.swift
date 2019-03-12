@@ -12,6 +12,8 @@ class Concentration {
     
     private(set) var cards = [Card]()
     
+    private(set) var score = 0
+    
     private var indexOfOneAndOnlyFaceUpCard: Int? {
         get {
             var foundIndex: Int?
@@ -46,9 +48,21 @@ class Concentration {
                 if self.cards[matchIndex].identifier == self.cards[index].identifier {
                     self.cards[matchIndex].isMatched = true
                     self.cards[index].isMatched = true
+                    
+                    //TODO: Score +2
+                    self.score += 2
+                } else {
+                    if (self.cards[index].hasBeenFliped) {
+                        //TODO: Score -1
+                        self.score -= 1
+                    }
                 }
                 //Текущую переварачиваем
                 self.cards[index].isFaceUp = true
+                
+                if (!self.cards[index].hasBeenFliped) {
+                    self.cards[index].hasBeenFliped = true
+                }
                 
             } else {
                 self.indexOfOneAndOnlyFaceUpCard = index
@@ -66,7 +80,8 @@ class Concentration {
             let card = Card()
             self.cards += [card, card]
         }
-        //TODO: Перемешать карты
+        
+        self.cards.shuffle()
     }
     
 }
